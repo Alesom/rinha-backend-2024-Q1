@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "rinha-2024-q1"
+version = "0.1.0"
+description = ""
+authors = ["Alesom Zorzi <alesom.zorzi@gmail.com>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+fastapi = "^0.109.2"
+uvicorn = "^0.27.1"
+sqlalchemy = "^2.0.26"
+sqlalchemy-utc = "^0.14.0"
+aiosqlite = "^0.19.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
