@@ -1,16 +1,19 @@
+import os
+
 from typing import cast
 
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
 from sqlalchemy.orm import DeclarativeBase
 from starlette.requests import Request
 
-SQLALCHEMY_DATABASE_URL = "sqlite+aiosqlite:///./sql_app.db"
-# SQLALCHEMY_DATABASE_URL = "postgresql://user:password@postgresserver/db"
+DB_HOSTNAME = os.getenv("DB_HOSTNAME")
+
+# SQLALCHEMY_DATABASE_URL = "sqlite+aiosqlite:///./sql_app.db"
+SQLALCHEMY_DATABASE_URL = f"postgresql+asyncpg://admin:123@{DB_HOSTNAME}/rinha"
 
 engine = create_async_engine(
-    SQLALCHEMY_DATABASE_URL, connect_args={"check_same_thread": False}
+    SQLALCHEMY_DATABASE_URL, pool_size=20
 )
-# SessionLocal = async_sessionmaker(autocommit=False, autoflush=False, bind=engine, expire_on_commit=False)
 
 
 class Base(DeclarativeBase):

@@ -26,10 +26,10 @@ app.add_middleware(
 )
 
 
-@app.on_event("startup")
-async def startup() -> None:
-    async with engine.begin() as conn:
-        await conn.run_sync(Base.metadata.create_all)
+# @app.on_event("startup")
+# async def startup() -> None:
+#     async with engine.begin() as conn:
+#         await conn.run_sync(Base.metadata.create_all)
 
 
 @app.middleware("http")
@@ -46,9 +46,9 @@ async def http_middleware(request: Request, call_next: Any) -> Response:
 
 
 @app.post("/clientes/{cliente_id}/transacoes", response_model=Transacao)
-async def insert_transacoes(client_id: int, transacao: TransacaoCreate, db: AsyncSession = Depends(get_session)) -> Transacao:
-    cliente = await crud.get_cliente(client_id, db)
-    await crud.create_transacao(client_id, transacao, db)
+async def insert_transacoes(cliente_id: int, transacao: TransacaoCreate, db: AsyncSession = Depends(get_session)) -> Transacao:
+    cliente = await crud.get_cliente(cliente_id, db)
+    await crud.create_transacao(cliente_id, transacao, db)
     if transacao.tipo == "c":
         saldo_atual = cliente.saldo_atual + transacao.valor
     else:
@@ -61,9 +61,9 @@ async def insert_transacoes(client_id: int, transacao: TransacaoCreate, db: Asyn
     return Transacao(limite=cliente.limite, saldo=saldo_atual)
 
 
-@app.get("/clientes/{cliente_id}/transacoes")
-async def extrato(client_id: int, db: AsyncSession = Depends(get_session)) -> Extrato:
-    cliente = await crud.get_cliente(client_id, db, with_transactions=True)
+@app.get("/clientes/{cliente_id}/extrato")
+async def extrato(cliente_id: int, db: AsyncSession = Depends(get_session)) -> Extrato:
+    cliente = await crud.get_cliente(cliente_id, db, with_transactions=True)
     return Extrato(
         saldo=Saldo(total=cliente.saldo_atual, data_extrato=now_in_utc(), limite=cliente.limite),
         ultimas_transacoes=[

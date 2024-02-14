@@ -3,7 +3,7 @@ from typing import Annotated
 from fastapi import HTTPException, Depends
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, contains_eager
 
 from backend.sql_app.models import ClienteDB, TransacaoDB
 from backend.schemas import TransacaoCreate
@@ -13,7 +13,7 @@ async def get_cliente(cliente_id: int, db: AsyncSession, with_transactions: bool
     query = select(ClienteDB)
 
     if with_transactions:
-        query = query.options(joinedload(ClienteDB.transacoes)).limit(10).order_by(TransacaoDB.realizada_em.desc())
+        query = query.join(ClienteDB.transacoes, isouter=True).options(contains_eager(ClienteDB.transacoes)).limit(10).order_by(TransacaoDB.realizada_em.desc())
 
     query = query.where(ClienteDB.id == cliente_id)
 
