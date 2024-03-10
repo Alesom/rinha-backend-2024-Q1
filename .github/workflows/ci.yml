@@ -8,7 +8,7 @@ jobs:
     steps:
       - uses: actions/checkout@master
       - name: Build
-        run: docker build . -t rinha-backend-2024-Q1
+        run: docker build . -t rinha-backend-2024-q1
   test:
     runs-on: ubuntu-20.04
     needs: build
