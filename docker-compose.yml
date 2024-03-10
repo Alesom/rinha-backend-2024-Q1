@@ -62,5 +62,5 @@ services:
 
 networks:
   default:
-    driver: bridge
+    driver: host
     name: rinha-2024-q1
