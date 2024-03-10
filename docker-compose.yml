@@ -54,7 +54,11 @@ services:
     volumes:
       - ./script.sql:/docker-entrypoint-initdb.d/init.sql
       - ./postgresql.conf:/etc/postgresql.conf:ro
-
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "330MB"
 
 networks:
   default:
