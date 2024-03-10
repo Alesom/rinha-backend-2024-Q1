@@ -1,5 +1,9 @@
 import datetime as dt
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, ConfigDict, TypeAdapter
+
+from backend.sql_app.models import ClienteDB, now_in_utc
+
+FromAttributes = ConfigDict(from_attributes=True)
 
 
 class TransacaoCreate(BaseModel):
@@ -13,19 +17,17 @@ class Transacao(BaseModel):
     saldo: int
 
 
-class Saldo(BaseModel):
+class Saldo(BaseModel, **FromAttributes):
     total: int
     data_extrato: dt.datetime
     limite: int
 
 
-class TransacaoLista(BaseModel):
+class TransacaoLista(BaseModel, **FromAttributes):
     valor: int
     tipo: str
     descricao: str
     realizada_em: dt.datetime
 
 
-class Extrato(BaseModel):
-    saldo: Saldo
-    ultimas_transacoes: list[TransacaoLista]
+Transacoes = TypeAdapter(list[TransacaoLista])

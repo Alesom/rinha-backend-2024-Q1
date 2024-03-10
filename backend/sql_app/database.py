@@ -1,10 +1,7 @@
 import os
 
-from typing import cast
-
+from sqlalchemy import AsyncAdaptedQueuePool
 from sqlalchemy.ext.asyncio import create_async_engine, async_sessionmaker, AsyncSession
-from sqlalchemy.orm import DeclarativeBase
-from starlette.requests import Request
 
 DB_HOSTNAME = os.getenv("DB_HOSTNAME")
 
@@ -12,13 +9,14 @@ DB_HOSTNAME = os.getenv("DB_HOSTNAME")
 SQLALCHEMY_DATABASE_URL = f"postgresql+asyncpg://admin:123@{DB_HOSTNAME}/rinha"
 
 engine = create_async_engine(
-    SQLALCHEMY_DATABASE_URL, pool_size=20
+    SQLALCHEMY_DATABASE_URL,
+    pool_size=50,
+    max_overflow=20,
+    poolclass=AsyncAdaptedQueuePool,
 )
+session_maker = async_sessionmaker(bind=engine, expire_on_commit=False)
 
 
-class Base(DeclarativeBase):
-    pass
-
-
-def get_session(request: Request) -> AsyncSession:
-    return cast(AsyncSession, request.state.db_session)
+async def get_session() -> AsyncSession:
+    async with session_maker.begin() as session:
+        yield session
